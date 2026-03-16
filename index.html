@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selvamohan Selvadoss — Linux System Administrator</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --surface: #111620;
+    --border: #1e2a3a;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --text: #e2eaf4;
+    --muted: #5a7090;
+    --green: #39ff6e;
+    --card: #141b26;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* GRID BACKGROUND */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: rgba(10,14,20,0.85);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 60px 80px;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-glow2 {
+    position: absolute;
+    bottom: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,107,53,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-content { max-width: 900px; }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-size: clamp(52px, 8vw, 96px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .hero h1 .first { color: var(--text); }
+  .hero h1 .last { color: var(--accent); }
+
+  .hero-sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--muted);
+    margin: 24px 0 40px;
+    letter-spacing: 0.05em;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  .hero-sub span { color: var(--accent2); }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  .stat-item .num {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    display: block;
+  }
+
+  .stat-item .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .hero-btns {
+    display: flex;
+    gap: 16px;
+    animation: fadeUp 0.8s ease 0.4s both;
+  }
+
+  .btn-primary {
+    padding: 14px 32px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,229,255,0.3);
+  }
+
+  .btn-outline {
+    padding: 14px 32px;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* TERMINAL WIDGET */
+  .terminal {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 380px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    animation: fadeUp 1s ease 0.5s both;
+  }
+
+  .terminal-bar {
+    background: var(--surface);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #ffbd2e; }
+  .dot.g { background: #28c840; }
+
+  .terminal-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+
+  .terminal-body {
+    padding: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .t-prompt { color: var(--green); }
+  .t-cmd { color: var(--text); }
+  .t-out { color: var(--muted); }
+  .t-val { color: var(--accent); }
+  .t-cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: var(--accent);
+    animation: blink 1s infinite;
+    vertical-align: middle;
+    margin-left: 2px;
+  }
+  @keyframes blink { 0%,100% {opacity:1} 50% {opacity:0} }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 60px;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 60px;
+    color: var(--text);
+  }
+
+  /* SKILLS */
+  .skills-section { border-top: 1px solid var(--border); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2px;
+  }
+
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px;
+    transition: border-color 0.3s, transform 0.3s;
+    cursor: default;
+  }
+
+  .skill-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+  }
+
+  .skill-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .skill-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    letter-spacing: 0.05em;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .skill-card:hover .tag {
+    color: var(--text);
+    border-color: rgba(0,229,255,0.2);
+  }
+
+  /* EXPERIENCE */
+  .exp-section { border-top: 1px solid var(--border); }
+
+  .exp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exp-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  }
+
+  .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .exp-role {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .exp-company {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .exp-period {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    white-space: nowrap;
+  }
+
+  .exp-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    list-style: none;
+  }
+
+  .exp-items li {
+    font-size: 14px;
+    color: var(--muted);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+    transition: color 0.2s;
+  }
+
+  .exp-items li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent2);
+    font-size: 10px;
+    top: 2px;
+  }
+
+  .exp-items li:hover { color: var(--text); }
+
+  /* CERTS */
+  .cert-section { border-top: 1px solid var(--border); }
+
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2px;
+  }
+
+  .cert-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    transition: border-color 0.3s;
+  }
+
+  .cert-card:hover { border-color: var(--accent2); }
+
+  .cert-badge {
+    width: 64px; height: 64px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .cert-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .cert-full {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* EDUCATION */
+  .edu-section { border-top: 1px solid var(--border); }
+
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .edu-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 40px;
+    transition: border-color 0.3s;
+  }
+
+  .edu-card:hover { border-color: var(--accent); }
+
+  .edu-year {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 0.15em;
+    margin-bottom: 12px;
+  }
+
+  .edu-degree {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .edu-school {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* CONTACT */
+  .contact-section {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .contact-cta {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+
+  .contact-cta span { color: var(--accent); }
+
+  .contact-desc {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: border-color 0.3s, transform 0.2s;
+  }
+
+  .contact-item:hover {
+    border-color: var(--accent);
+    transform: translateX(8px);
+  }
+
+  .contact-icon {
+    width: 40px; height: 40px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .contact-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .contact-value {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 24px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer span {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* HAMBURGER */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px; height: 40px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px;
+    cursor: pointer;
+    z-index: 200;
+    flex-shrink: 0;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--accent);
+    transition: transform 0.3s, opacity 0.3s;
+    transform-origin: center;
+  }
+
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* MOBILE MENU DRAWER */
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10,14,20,0.97);
+    backdrop-filter: blur(24px);
+    z-index: 150;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .mobile-menu.open {
+    transform: translateX(0);
+  }
+
+  .mobile-menu-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 0 32px;
+  }
+
+  .mobile-menu a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: var(--card);
+    transition: color 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .mobile-menu a:hover,
+  .mobile-menu a:active {
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateX(6px);
+  }
+
+  .mobile-menu a .arrow {
+    color: var(--accent2);
+    font-size: 16px;
+  }
+
+  .mobile-menu-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .mobile-menu-logo span { color: var(--green); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    .terminal { display: none; }
+    nav { padding: 16px 24px; }
+    .hero { padding: 100px 24px 60px; }
+    section { padding: 60px 24px; }
+    .exp-items { grid-template-columns: 1fr; }
+    .edu-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    footer { padding: 20px 24px; flex-direction: column; gap: 8px; }
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu { display: flex; }
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">$ selvamohan@linux:~</div>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#certifications">Certs</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU DRAWER -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-inner">
+    <div class="mobile-menu-logo"><span>●</span> selvamohan@linux:~</div>
+    <a href="#skills" class="menu-link">Skills <span class="arrow">▸</span></a>
+    <a href="#experience" class="menu-link">Experience <span class="arrow">▸</span></a>
+    <a href="#certifications" class="menu-link">Certifications <span class="arrow">▸</span></a>
+    <a href="#education" class="menu-link">Education <span class="arrow">▸</span></a>
+    <a href="#contact" class="menu-link">Contact <span class="arrow">▸</span></a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Available for opportunities</div>
+    <h1>
+      <div class="first">SELVA</div>
+      <div class="last">MOHAN</div>
+    </h1>
+    <p class="hero-sub">Linux System Administrator &nbsp;/&nbsp; <span>Chennai, India</span></p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="num">6+</span>
+        <span class="label">Years Experience</span>
+      </div>
+      <div class="stat-item">
+        <span class="num">2</span>
+        <span class="label">Certifications</span>
+      </div>
+      <div class="stat-item">
+        <span class="num">20+</span>
+        <span class="label">Technologies</span>
+      </div>
+    </div>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-primary">Get In Touch</a>
+      <a href="#experience" class="btn-outline">View Experience</a>
+    </div>
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="dot r"></div>
+      <div class="dot y"></div>
+      <div class="dot g"></div>
+      <span class="terminal-title">bash — selvamohan@server</span>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-prompt">selvamohan@srv:~$</span> <span class="t-cmd">whoami</span></div>
+      <div class="t-out" style="color:#e2eaf4;margin-bottom:8px">Selvamohan Selvadoss</div>
+      <div><span class="t-prompt">selvamohan@srv:~$</span> <span class="t-cmd">cat role.txt</span></div>
+      <div class="t-val" style="margin-bottom:8px">Linux System Administrator</div>
+      <div><span class="t-prompt">selvamohan@srv:~$</span> <span class="t-cmd">uptime</span></div>
+      <div class="t-out" style="margin-bottom:8px">up 6+ years, load avg: 0.01</div>
+      <div><span class="t-prompt">selvamohan@srv:~$</span> <span class="t-cmd">systemctl status career</span></div>
+      <div><span style="color:#39ff6e">●</span> <span class="t-val">career.service</span> — Active</div>
+      <div class="t-out">&nbsp;&nbsp;Since: Feb 2019 (NOVALNET)</div>
+      <div class="t-out" style="margin-bottom:8px">&nbsp;&nbsp;Tasks: Ubuntu, Docker, VPN...</div>
+      <div><span class="t-prompt">selvamohan@srv:~$</span> <span class="t-cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="skills-section">
+  <div class="section-label">// technical expertise</div>
+  <h2 class="section-title">Core Skills</h2>
+  <div class="skills-grid">
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🐧</div>
+      <h3>Linux Administration</h3>
+      <div class="skill-tags">
+        <span class="tag">Ubuntu</span>
+        <span class="tag">openSUSE</span>
+        <span class="tag">LVM</span>
+        <span class="tag">APT</span>
+        <span class="tag">Zypper</span>
+        <span class="tag">User Mgmt</span>
+        <span class="tag">Patch Mgmt</span>
+        <span class="tag">Log Analysis</span>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🖥️</div>
+      <h3>Servers & Apps</h3>
+      <div class="skill-tags">
+        <span class="tag">Nextcloud</span>
+        <span class="tag">Zimbra</span>
+        <span class="tag">Mailcow</span>
+        <span class="tag">Mattermost</span>
+        <span class="tag">Apache</span>
+        <span class="tag">Nginx</span>
+        <span class="tag">Git</span>
+        <span class="tag">SSH / FTP</span>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🛡️</div>
+      <h3>Security & Monitoring</h3>
+      <div class="skill-tags">
+        <span class="tag">OSSEC</span>
+        <span class="tag">Fail2Ban</span>
+        <span class="tag">KeePass</span>
+        <span class="tag">Server Hardening</span>
+        <span class="tag">Log Monitoring</span>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🌐</div>
+      <h3>VPN & Networking</h3>
+      <div class="skill-tags">
+        <span class="tag">OPNsense</span>
+        <span class="tag">OpenVPN</span>
+        <span class="tag">Firewall</span>
+        <span class="tag">DNS</span>
+        <span class="tag">Network Troubleshooting</span>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🐳</div>
+      <h3>Virtualization & Containers</h3>
+      <div class="skill-tags">
+        <span class="tag">Docker</span>
+        <span class="tag">VM Server Setup</span>
+        <span class="tag">VM Management</span>
+        <span class="tag">Containerization</span>
+      </div>
+    </div>
+    <div class="skill-card fade-in">
+      <div class="skill-icon">🗄️</div>
+      <h3>Databases & Scripting</h3>
+      <div class="skill-tags">
+        <span class="tag">MySQL</span>
+        <span class="tag">MariaDB</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Bash Scripting</span>
+        <span class="tag">Automation</span>
+        <span class="tag">Backup & Restore</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="exp-section">
+  <div class="section-label">// professional journey</div>
+  <h2 class="section-title">Experience</h2>
+  <div class="exp-card fade-in">
+    <div class="exp-header">
+      <div>
+        <div class="exp-role">Linux System Administrator</div>
+        <div class="exp-company">NOVALNET E SOLUTION PVT. LTD · Chennai, India</div>
+      </div>
+      <div class="exp-period">FEB 2019 → PRESENT</div>
+    </div>
+    <ul class="exp-items">
+      <li>Administering Ubuntu and openSUSE servers in production environments</li>
+      <li>Installing, configuring and supporting Nextcloud, Mattermost & Github servers</li>
+      <li>Managing and maintaining Zimbra and Mailcow mail servers</li>
+      <li>Performing server troubleshooting and resolving critical incidents</li>
+      <li>Implementing system security using OSSEC and Fail2Ban</li>
+      <li>Setting up and managing VPN solutions using OPNsense and OpenVPN</li>
+      <li>Managing Docker-based application environments</li>
+      <li>Setting up and maintaining virtual machine servers</li>
+      <li>Managing MySQL, MariaDB, and PostgreSQL databases</li>
+      <li>Writing and maintaining Bash scripts for automation tasks</li>
+      <li>Supporting Windows Server and Desktop systems</li>
+      <li>Coordinating with application and development teams</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications" class="cert-section">
+  <div class="section-label">// credentials</div>
+  <h2 class="section-title">Certifications</h2>
+  <div class="cert-grid">
+    <div class="cert-card fade-in">
+      <div class="cert-badge">🎖️</div>
+      <div>
+        <div class="cert-name">RHCSA</div>
+        <div class="cert-full">Red Hat Certified System Administrator</div>
+      </div>
+    </div>
+    <div class="cert-card fade-in">
+      <div class="cert-badge">🏅</div>
+      <div>
+        <div class="cert-name">CCNA</div>
+        <div class="cert-full">Cisco Certified Network Associate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education" class="edu-section">
+  <div class="section-label">// academic background</div>
+  <h2 class="section-title">Education</h2>
+  <div class="edu-grid">
+    <div class="edu-card fade-in">
+      <div class="edu-year">2015 – 2018</div>
+      <div class="edu-degree">MCA — Master of Computer Application</div>
+      <div class="edu-school">Bharadhidhasan University<br>Trichy, Tamilnadu, India</div>
+    </div>
+    <div class="edu-card fade-in">
+      <div class="edu-year">2012 – 2015</div>
+      <div class="edu-degree">BSc Physics — Bachelor of Science</div>
+      <div class="edu-school">Islamia Arts & Science College<br>Vellore, Tamilnadu — Thiruvalluvar University</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="contact-grid">
+    <div>
+      <div class="section-label">// get in touch</div>
+      <div class="contact-cta">Let's <span>Connect</span> &amp; Collaborate</div>
+      <p class="contact-desc">Open to new opportunities in Linux infrastructure, system administration, and DevOps roles. Based in Chennai, India.</p>
+      <a href="mailto:mohanjoy23@gmail.com" class="btn-primary">Send Email</a>
+    </div>
+    <div class="contact-links">
+      <a href="tel:+919843529624" class="contact-item">
+        <div class="contact-icon">📞</div>
+        <div>
+          <div class="contact-label">Phone</div>
+          <div class="contact-value">+91 9843529624</div>
+        </div>
+      </a>
+      <a href="mailto:mohanjoy23@gmail.com" class="contact-item">
+        <div class="contact-icon">✉️</div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value">mohanjoy23@gmail.com</div>
+        </div>
+      </a>
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-label">Location</div>
+          <div class="contact-value">Chennai, Tamilnadu, India</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Selvamohan Selvadoss</span>
+</footer>
+
+<script>
+  // Hamburger menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+    document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+  });
+
+  document.querySelectorAll('.menu-link').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
